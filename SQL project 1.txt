@@ -1,0 +1,75 @@
+Topics covered in this SQL Project:
+Where
+Aggregated functions
+window functions
+case
+CTE
+Sub-queries
+
+
+-- total amount spent by each customer
+
+select s.userid,sum(p.price) total_amount from sales s inner join product p
+on s.product_id=p.product_id 
+group by userid;
+
+-- how many times an user placed an order
+select userid,count(created_date) total_days from sales 
+group by userid;
+
+-- Find the user's first order date and the product they ordered.
+
+select s.userid,min(s.created_date) first_order_date ,pi.product_name from sales s join product_info pi
+on s.product_id= pi.product_id
+group by userid;
+
+-- calculate the time taken by an user to place his first order from the day he sginup
+
+select s.userid,datediff(min(s.created_date),u.signup_date) days from sales s join users u
+on s.userid=u.userid
+group by userid;
+
+-- find the price of each product
+
+select pi.product_id,pi.product_name,p.price from product_info pi inner join product p
+on pi.product_id=p.product_id;
+
+-- find the number of users out of the total users who signed up for goldusers membership
+with cte as (select u.*,g.userid golduser from users u left join goldusers_signup g 
+on u.userid=g.userid )
+select count(userid)  total_users,count(golduser) total_goldusers from cte;
+
+-- what is the most purchased item, the name and the number of times it was ordered.
+
+select s.product_id,pi.product_name,count(s.product_id) no_of_times_ordered from sales s inner join product_info pi
+on s.product_id= pi.product_id
+group by s.product_id
+order by no_of_times_ordered desc limit 1;
+
+-- what is the most purchased product and how many time it was ordered by each user
+
+with cte as (select product_id from sales group by product_id order by count(product_id) desc )
+select userid,s.product_id most_purchased_item,count(userid) times_ordered from sales s join cte c on c.product_id=s.product_id where s.product_id =2
+group by userid;
+
+-- which item was most ordered by each customer
+
+with cte as (select userid,product_id,count(product_id) times_ordered from sales group by userid,product_id
+order by times_ordered desc)
+select userid,product_id,max(times_ordered) from cte group by userid;
+
+-- what is the total amount spent by each user and no of orders placed by each user
+
+select s.userid,count(s.userid) total_orders,sum(p.price) total_money_spent from sales s join product p
+on s.product_id=p.product_id group by userid order by userid;
+
+-- Add a column to the sales that determine which users are gold members and when they took the gold member sub scription?
+
+select s.*,(case when g.gold_signup_date is null then 'No' else 'yes' end) gold_member,g.gold_signup_date  from sales s left join goldusers_signup g
+on s.userid=g.userid;
+
+-- get all the user and produt_info into one table.
+
+select s.*,u.signup_date,p.price,pi.product_name from sales s inner join users u on s.userid=u.userid
+inner join product p on s.product_id=p.product_id inner join product_info pi on s.product_id=pi.product_id
+order by s.userid
