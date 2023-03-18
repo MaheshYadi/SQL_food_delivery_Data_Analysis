@@ -1,2 +1,4 @@
 # SQLproject
-I created this Online delivery platform Data SQL project
+In this sql project I focussed on creating scenarios that require one to use Joins,CTE,Window Functions.
+I got the data set from google, I've downloaded the excel files and uploaded them to my-sql work bench and started working on them.
+I've attached an excel sheet with all the tables in one file. It makes easy for anyone to check out the data files.
