@@ -2,6 +2,7 @@ Topics covered in this SQL Project:
 Where
 Aggregated functions
 window functions
+inner and Left join
 case
 CTE
 Sub-queries
